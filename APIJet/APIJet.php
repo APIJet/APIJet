@@ -63,7 +63,7 @@ class APIJet
                 $matchedResource[1], 
                 Router::getMachedRouteParameters()
             );
-           
+            
             if ($response === false) {
                 Response::setCode(404);
             } elseif (empty($response)) {

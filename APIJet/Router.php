@@ -54,7 +54,7 @@ class Router
     private static function parseResourceName($resourceName)
     {
         $strPosName = strpos($resourceName, "\\");
-        return [substr($resourceName, 0, 4), substr($resourceName, 5)];
+        return [substr($resourceName, 0, $strPosName), substr($resourceName, ++$strPosName)];
     }
     
     public static function getMachedRouteParameters()
