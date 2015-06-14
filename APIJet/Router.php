@@ -14,7 +14,7 @@ class Router
         return Config::getByName('Router');   
     }
     
-    private function getRoutes()
+    private static function getRoutes()
     {
         return self::getConfig()['routes'];
     }
