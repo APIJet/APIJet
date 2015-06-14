@@ -7,9 +7,7 @@ class Request
     const GET = 'GET';
     const POST = 'POST';
     const PUT = 'PUT';
-    const PATCH = 'PATCH';
     const DELETE = 'DELETE';
-    const OPTIONS = 'OPTIONS';
     
     private function __construct() {}
     private function __clone() {}
