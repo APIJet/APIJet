@@ -5,6 +5,7 @@ namespace APIJet;
 class APIJet 
 {
     private static $rootDir = null;
+    const fileExt = '.php';
     
     private function __construct() {}
     private function __clone() {}
@@ -29,7 +30,7 @@ class APIJet
             $className = substr($className, $lastNsPos + 1);
             $fileName  = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
         }
-        $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
+        $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . self::fileExt;
         
         // Original PSR-0
         // require $fileName;
@@ -50,22 +51,65 @@ class APIJet
     public static function runApp()
     {
         $matchedResource = Router::getMatchedRouterResource(Request::getMethod(), Request::getCleanRequestUrl());
-        
+
         if ($matchedResource === null) {
-            echo "404"; exit;
+            Response::setCode(404);
+            return;
         }
         
-        $response = self::executeResoruceAction($matchedResource[0], $matchedResource[1], Router::getMachedRouteParameters());
-        
+        try  {
+            $response = self::executeResoruceAction(
+                $matchedResource[0], 
+                $matchedResource[1], 
+                Router::getMachedRouteParameters()
+            );
+           
+            if ($response === false) {
+                Response::setCode(404);
+            } else {
+                Response::setBody($response);
+            }
+        } catch(\Exception $e) {
+            Response::setCode(500);
+        }
     }
     
-    private static function executeResoruceAction($controller, $action, $patameters)
+    /**
+     * @return response of executed action or false in case it doesn't exist
+     * @param string $controller
+     * @param string $action
+     * @param string  $parameters
+     */
+    private static function executeResoruceAction($controller, $action, $parameters)
     {
-        $controller = 'Controller\\'.ucfirst($controller);
+        $controller = ucfirst($controller);
         $action = strtolower(Request::getMethod()).'_'.$action;
         
-        // @todo catch the error and return not exist resource not exit.
-        return (array) call_user_func_array(array(new $controller(), $action), $patameters);
+        // Check if controller file exist
+        if (!file_exists(self::getRootDir().'Controller/'.$controller.self::fileExt))  {
+            return false;
+        }
+        
+        $controller = 'Controller\\'.$controller;
+        
+        // Check if class exist
+        if (!class_exists($controller)) {
+            return false;
+        }
+        
+        $controllerInstance = new $controller();
+        
+        // Check if action exist
+        if (!method_exists($controllerInstance, $action)) {
+            return false;
+        }
+        
+        // Check if it's callable
+        if (!is_callable([$controllerInstance, $action])) {
+            return false;
+        }
+        
+        return (array) call_user_func_array(array($controllerInstance, $action), $parameters);
     }
 }
 
