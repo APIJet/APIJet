@@ -66,6 +66,8 @@ class APIJet
            
             if ($response === false) {
                 Response::setCode(404);
+            } elseif (empty($response)) {
+                Response::setCode(204);
             } else {
                 Response::setBody($response);
             }
