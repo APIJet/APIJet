@@ -2,7 +2,7 @@
 
 namespace Helper\Traits;
 
-trait ErrorModule
+trait ErrorResponse
 {
     private $errorCode = null;
     
@@ -32,6 +32,12 @@ trait ErrorModule
             'error_code' => $this->getErrorCode(),
             'error_message' => $this->getErrorMessage(),
         ];
+    }
+    
+    public function setErrorInfo($controller)
+    {
+        $controller->setResponseCode(400);
+        return $this->getErrorInfo();
     }
 }
 
