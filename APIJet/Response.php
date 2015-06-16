@@ -7,9 +7,6 @@ class Response
     private function __construct() {}
     private function __clone() {}
     
-    const CODE_404  = '';
-    const CODE_200  = '';
-    
     private static $code = 200;
     private static $body = [];
     private static $headers = [];
