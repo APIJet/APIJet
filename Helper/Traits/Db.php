@@ -2,10 +2,22 @@
 
 namespace Helper\Traits;
 
+use \Helper\Db as DbHelper;
+
 trait Db
 {
-    public function db()
+    private function dbInstance()
     {
-        return \Helper\Db::getInstance();
+        return DbHelper::getInstance();
+    }
+    
+    private function execQuery($query, array $parameters = []) 
+    {
+        return DbHelper::execQuery($query, $parameters);
+    }
+    
+    private function getSqlLimitByLimits($limit, $offset)
+    {
+        return DbHelper::getLimitQuery($limit, $offset);
     }
 }
