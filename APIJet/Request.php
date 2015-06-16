@@ -30,4 +30,34 @@ class Request
     {
         return $_SERVER['REQUEST_METHOD'];
     }
+    
+    public static function getLimit()
+    {
+        if (isset($_GET['limit'])) {
+            $limit = (int) $_GET['limit'];
+            
+            if ($limit < 0) {
+                return APIJet::getAPIJetConfig(APIJet::DEFAULT_RESPONSE_LIMIT); 
+            }
+            
+            return $limit;
+        }
+        
+        return APIJet::getAPIJetConfig(APIJet::DEFAULT_RESPONSE_LIMIT); 
+    }
+    
+    public static function getOffset()
+    {
+        if (isset($_GET['offset'])) {
+            $offset = (int) $_GET['offset'];
+            
+            if ($offset < 0) {
+                return 0;
+            }
+            
+            return $offset;
+        }
+        
+        return 0;
+    }
 }

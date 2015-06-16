@@ -13,5 +13,15 @@ abstract class BaseController
     {
         return Response::getCode();
     }
+    
+    public function getRequestLimit()
+    {
+        return Request::getLimit();
+    }
+    
+    public function getRequestOffset()
+    {
+        return Request::getOffset();        
+    }
 }
 

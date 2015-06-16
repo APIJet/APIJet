@@ -4,8 +4,19 @@ namespace APIJet;
 
 class APIJet 
 {
-    private static $rootDir = null;
     const fileExt = '.php';
+    private static $rootDir = null;
+    private static $apiJetConfig = null;
+    
+    // List of configurable name settings.
+    const DEFAULT_RESPONSE_LIMIT = 0;
+    const AUTHORIZATION_CALLBACK = 1;
+    
+    // Default configure value which can be overwrite by APIJet config file.
+    private static $apiJetDefaultConfig = [
+        self::DEFAULT_RESPONSE_LIMIT => 25,
+        self::AUTHORIZATION_CALLBACK => null // null means not auth
+    ];
     
     private function __construct() {}
     private function __clone() {}
@@ -48,8 +59,22 @@ class APIJet
         return self::$rootDir;
     }
     
+    public static function getAPIJetConfig($propertyName)
+    {
+        if (self::$apiJetConfig === null) {
+            self::$apiJetConfig = Config::getByName('APIJet') + self::$apiJetDefaultConfig;
+        }
+    
+        return self::$apiJetConfig[$propertyName];
+    }
+    
     public static function runApp()
     {
+        if (!Request::isАuthorized()) {
+            Response::setCode(401);
+            return;
+        }
+        
         $matchedResource = Router::getMatchedRouterResource(Request::getMethod(), Request::getCleanRequestUrl());
 
         if ($matchedResource === null) {
