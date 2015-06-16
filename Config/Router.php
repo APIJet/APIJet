@@ -1,13 +1,13 @@
 <?php 
 
-use APIJet\Request;
+use APIJet\Router AS R;
 
 return [
     'globalPattern' => [
         '{id}' => '([0-9]+)',
     ],
     'routes' => [
-        'hello_world' => [Request::GET, 'hello\world'],        
+        'hello_world' => [R::GET, 'hello\world'],        
     ]
 ];
 
