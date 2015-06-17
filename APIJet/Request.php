@@ -9,6 +9,8 @@ class Request
     const PUT = 'PUT';
     const DELETE = 'DELETE';
     
+    private static $inputData = null;
+    
     private function __construct() {}
     private function __clone() {}
     
@@ -70,5 +72,22 @@ class Request
         }
         
         return (bool) $authorizationCallback();
+    }
+    
+    public static function getInputData()
+    {
+        if (self::$inputData === null) {
+    
+            $inputData = [];
+            $rawInput = file_get_contents('php://input');
+    
+            if (!empty($rawInput)) {
+                mb_parse_str($rawInput, $inputData);
+            }
+    
+            self::$inputData = $inputData;
+        }
+    
+        return self::$inputData;
     }
 }
