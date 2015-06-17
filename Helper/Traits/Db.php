@@ -6,18 +6,23 @@ use \Helper\Db as DbHelper;
 
 trait Db
 {
-    private function dbInstance()
+    private static function dbInstance()
     {
         return DbHelper::getInstance();
     }
     
-    private function execQuery($query, array $parameters = []) 
+    private static function execQuery($query, array $parameters = []) 
     {
         return DbHelper::execQuery($query, $parameters);
     }
     
-    private function getSqlLimitByLimits($limit, $offset)
+    private static function getSqlLimitByLimits($limit, $offset)
     {
         return DbHelper::getLimitQuery($limit, $offset);
+    }
+    
+    private static function getLastInsertId()
+    {
+        return DbHelper::getLastInsertId();
     }
 }

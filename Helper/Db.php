@@ -46,4 +46,9 @@ class Db
         
         return " LIMIT $offset, $limit ";
     }
+    
+    public static function getLastInsertId()
+    {
+        return self::getInstance()->lastInsertId();
+    }
 }
