@@ -23,5 +23,10 @@ abstract class BaseController
     {
         return Request::getOffset();        
     }
+    
+    public function getInputData()
+    {
+        return Request::getInputData();
+    }
 }
 
