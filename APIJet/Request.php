@@ -60,4 +60,15 @@ class Request
         
         return 0;
     }
+    
+    public static function isАuthorized()
+    {
+        $authorizationCallback = APIJet::getAPIJetConfig(APIJet::AUTHORIZATION_CALLBACK);
+        
+        if ($authorizationCallback === null) {
+            return true;    
+        }
+        
+        return (bool) $authorizationCallback();
+    }
 }
