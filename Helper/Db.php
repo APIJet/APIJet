@@ -44,7 +44,7 @@ class Db
         $limit = (int) $limit;
         $offset = (int) $offset;
         
-        return " LIMIT $offset, $limit ";
+        return " LIMIT ".($offset * $limit).", $limit ";
     }
     
     public static function getLastInsertId()
