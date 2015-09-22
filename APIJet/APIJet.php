@@ -53,7 +53,7 @@ class APIJet
     public static function getRootDir()
     {
         if (self::$rootDir === null) {
-            self::$rootDir = realpath(dirname(__FILE__).'/../').DIRECTORY_SEPARATOR;
+            self::$rootDir = realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
         }
         
         return self::$rootDir;
