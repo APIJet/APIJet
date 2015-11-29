@@ -65,6 +65,32 @@ class APIJet
         return self::$apiJetConfig[$propertyName];
     }
     
+    private $singletonContainer;
+    
+    public function getSingletonContainer($name)
+    {
+        if (isset($this->singletonContainer[$name])) {
+            return $this->singletonContainer[$name];
+        }
+    
+        return false;
+    }
+    
+    /**
+     * @return Router
+     */
+    public function getRouterContainer()
+    {
+        return $this->getSingletonContainer('router');
+    }
+    
+    public function __construct() 
+    {
+        $containers['router'] = new Router();
+        $this->singletonContainer = $containers;
+    }
+    
+    
     public function run()
     {
         if (!Request::isАuthorized()) {
@@ -72,7 +98,8 @@ class APIJet
             return;
         }
         
-        $matchedResource = Router::getMatchedRouterResource(Request::getMethod(), Request::getCleanRequestUrl());
+        $router = $this->getRouterContainer();
+        $matchedResource = $router->getMatchedRouterResource(Request::getMethod(), Request::getCleanRequestUrl());
 
         if ($matchedResource === null) {
             Response::setCode(404);

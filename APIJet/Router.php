@@ -35,8 +35,10 @@ class Router
     
     private static $matchedRoutePatameters = [];
     
-    private function __construct() {}
-    private function __clone() {}
+    public function __construct() 
+    {
+        
+    }
     
     private static function getConfig()
     {
@@ -58,7 +60,7 @@ class Router
      * @param string $requestMethod
      * @param string $requestResourceUrl
      */
-    public static function getMatchedRouterResource($requestMethod, $requestResourceUrl)
+    public function getMatchedRouterResource($requestMethod, $requestResourceUrl)
     {
         foreach (self::getRoutes() as $routePattern => $route) {
             
