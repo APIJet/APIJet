@@ -8,7 +8,7 @@ class APIJet
     private static $rootDir = null;
     private static $apiJetConfig = null;
     
-    // List of configurable name settings.
+    // List of configurable settings name.
     const DEFAULT_RESPONSE_LIMIT = 0;
     const AUTHORIZATION_CALLBACK = 1;
     
@@ -100,6 +100,14 @@ class APIJet
     }
     
     /**
+     * @return Request
+     */
+    public function getRequestContainer()
+    {
+        return $this->getSingletonContainer('Request');
+    }
+    
+    /**
      * @return Response
      */
     public function getResponseContainer()
@@ -112,36 +120,40 @@ class APIJet
         $config = $containers['Config'] = new Config();
         $config->set(self::$defaultConfig);
         
+        $APIJetConfig = $config->get('APIJet');
         $routerConfig = $config->get('Router');
         
         $containers['Router'] = new Router(
             $routerConfig['routes'], 
             $routerConfig['globalPattern']
         );
+        $containers['Request'] = new Request(
+            $APIJetConfig[APIJet::AUTHORIZATION_CALLBACK],
+            $APIJetConfig[APIJet::DEFAULT_RESPONSE_LIMIT]
+        );
         $containers['Response'] = new Response();
-        
         
         $this->singletonContainer = $containers;
     }
     
     public function run()
     {
+        $request = $this->getRequestContainer();
         $response = $this->getResponseContainer();
         
-        if (!Request::isАuthorized()) {
+        if (!$request->isАuthorized()) {
             $response->setCode(401);
             return;
         }
-        
         $router = $this->getRouterContainer();
-
-        if (!$router->getMatchedRouterResource(Request::getMethod(), Request::getCleanRequestUrl())) {
+        
+        if (!$router->getMatchedRouterResource($request::getMethod(), $request::getCleanRequestUrl())) {
             $response->setCode(404);
             return;
         }
         
         try  {
-            $actionResponse = self::executeResoruceAction(
+            $actionResponse = $this->executeResoruceAction(
                 $router->getMatchedController(),
                 $router->getMatchedAction(),
                 $router->getMatchedRouteParameters()
@@ -163,12 +175,12 @@ class APIJet
      * @return response of executed action or false in case it doesn't exist
      * @param string $controller
      * @param string $action
-     * @param string  $parameters
+     * @param string $parameters
      */
-    private static function executeResoruceAction($controller, $action, $parameters)
+    private function executeResoruceAction($controller, $action, $parameters)
     {
         $controller = ucfirst($controller);
-        $action = strtolower(Request::getMethod()).'_'.$action;
+        $action = strtolower($this->getRequestContainer()->getMethod()).'_'.$action;
         
         // Check if controller file exist
         if (!file_exists(self::getRootDir().'Controller/'.$controller.self::fileExt))  {

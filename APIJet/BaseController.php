@@ -20,17 +20,23 @@ abstract class BaseController
     
     public function getRequestLimit()
     {
-        return Request::getLimit();
+        global $app;
+        
+        return $app->getRequestContainer()->getLimit();
     }
     
     public function getRequestOffset()
     {
-        return Request::getOffset();        
+        global $app;
+        
+        return $app->getRequestContainer()->getOffset();
     }
     
     public function getInputData()
     {
-        return Request::getInputData();
+        global $app;
+        
+        return $app->getRequestContainer()->getInputData();
     }
 }
 

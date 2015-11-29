@@ -11,8 +11,14 @@ class Request
     
     private static $inputData = null;
     
-    private function __construct() {}
-    private function __clone() {}
+    private $authorizationCallback;
+    private $defaultResponseLimit;
+    
+    public function __construct($authorizationCallback, $defaultResponseLimit = 0)
+    {
+        $this->authorizationCallback = $authorizationCallback;
+        $this->defaultResponseLimit = (int) $defaultResponseLimit;
+    }
     
     public static function getCleanRequestUrl()
     {
@@ -33,10 +39,8 @@ class Request
         return $_SERVER['REQUEST_METHOD'];
     }
     
-    public static function getLimit()
+    public function getLimit()
     {
-        global $app;
-        
         if (isset($_GET['limit'])) {
             $limit = (int) $_GET['limit'];
             
@@ -44,8 +48,7 @@ class Request
                 return $limit;
             }
         }
-        
-        return $app->getConfigContainer()->get('APIJet')[APIJet::DEFAULT_RESPONSE_LIMIT]; 
+        return $this->defaultResponseLimit; 
     }
     
     public static function getOffset()
@@ -53,21 +56,16 @@ class Request
         if (isset($_GET['offset'])) {
             $offset = (int) $_GET['offset'];
             
-            if ($offset < 0) {
-                return 0;
+            if ($offset > 0) {
+                return $offset;
             }
-            
-            return $offset;
         }
-        
         return 0;
     }
     
-    public static function isАuthorized()
+    public function isАuthorized()
     {
-        global $app;
-        
-        $authorizationCallback = $app->getConfigContainer()->get(APIJet::AUTHORIZATION_CALLBACK);
+        $authorizationCallback = $this->authorizationCallback;
         
         if ($authorizationCallback === null) {
             return true;
