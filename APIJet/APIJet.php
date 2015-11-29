@@ -110,8 +110,7 @@ class APIJet
         if (isset($this->singletonContainer[$name])) {
             return $this->singletonContainer[$name];
         }
-    
-        return false;
+        trigger_error('Singleton container with '.$name.' does not exist', E_USER_ERROR);
     }
     
     /**
