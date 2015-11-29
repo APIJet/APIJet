@@ -12,11 +12,27 @@ class APIJet
     const DEFAULT_RESPONSE_LIMIT = 0;
     const AUTHORIZATION_CALLBACK = 1;
     
-    // Default configure value which can be overwrite by APIJet config file.
-    private static $apiJetDefaultConfig = [
-        self::DEFAULT_RESPONSE_LIMIT => 25,
-        self::AUTHORIZATION_CALLBACK => null // null means not auth
-    ];
+    private static $defaultConfig = 
+    [
+        'APIJet' => [
+            self::DEFAULT_RESPONSE_LIMIT => 25,
+            self::AUTHORIZATION_CALLBACK => null,
+        ],
+        'Db' => [
+            'hostname' => '',
+            'database' => '',
+            'username' => '',
+            'password' => '',
+        ],
+        'Router' => [
+            'globalPattern' => [
+                '{id}' => '([0-9]+)',
+            ],
+            'routes' => [
+                'hello_world' => [\APIJet\Router::GET, 'hello\world'],
+            ]
+        ]
+   ];
     
     public static function registerAutoload()
     {
@@ -56,15 +72,6 @@ class APIJet
         return self::$rootDir;
     }
     
-    public static function getAPIJetConfig($propertyName)
-    {
-        if (self::$apiJetConfig === null) {
-            self::$apiJetConfig = Config::getByName('APIJet') + self::$apiJetDefaultConfig;
-        }
-    
-        return self::$apiJetConfig[$propertyName];
-    }
-    
     private $singletonContainer;
     
     public function getSingletonContainer($name)
@@ -84,16 +91,28 @@ class APIJet
         return $this->getSingletonContainer('Router');
     }
     
+    /**
+     * @return Config
+     */
+    public function getConfigContainer()
+    {
+        return $this->getSingletonContainer('Config');
+    }
+    
     public function __construct() 
     {
+        $config = $containers['Config'] = new Config();
+        $config->set(self::$defaultConfig);
+        
+        $routerConfig = $config->get('Router');
+        
         $containers['Router'] = new Router(
-            Config::getByName('Router')['routes'],
-            Config::getByName('Router')['globalPattern']
+            $routerConfig['routes'], 
+            $routerConfig['globalPattern']
         );
         
         $this->singletonContainer = $containers;
     }
-    
     
     public function run()
     {

@@ -2,7 +2,7 @@
 
 namespace Helper;
 
-use APIJet\Config;
+use APIJet\APIJet;
 use \PDO;
 
 class Db
@@ -20,7 +20,10 @@ class Db
     public static function getInstance()
     {
         if (self::$instance === null) {
-            $config = Config::getByName('Db');
+            
+            global $app;
+            
+            $config = $app->getConfigContainer()->get('Db');
             
             self::$instance = new PDO('mysql:host='.$config['hostname'].';dbname='.$config['database'], 
                 $config['username'], 

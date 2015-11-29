@@ -35,17 +35,17 @@ class Request
     
     public static function getLimit()
     {
+        global $app;
+        
         if (isset($_GET['limit'])) {
             $limit = (int) $_GET['limit'];
             
-            if ($limit < 0) {
-                return APIJet::getAPIJetConfig(APIJet::DEFAULT_RESPONSE_LIMIT); 
+            if ($limit > 0) {
+                return $limit;
             }
-            
-            return $limit;
         }
         
-        return APIJet::getAPIJetConfig(APIJet::DEFAULT_RESPONSE_LIMIT); 
+        return $app->getConfigContainer()->get('APIJet')[APIJet::DEFAULT_RESPONSE_LIMIT]; 
     }
     
     public static function getOffset()
@@ -65,10 +65,12 @@ class Request
     
     public static function isАuthorized()
     {
-        $authorizationCallback = APIJet::getAPIJetConfig(APIJet::AUTHORIZATION_CALLBACK);
+        global $app;
+        
+        $authorizationCallback = $app->getConfigContainer()->get(APIJet::AUTHORIZATION_CALLBACK);
         
         if ($authorizationCallback === null) {
-            return true;    
+            return true;
         }
         
         return (bool) $authorizationCallback();
