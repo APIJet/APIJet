@@ -18,9 +18,6 @@ class APIJet
         self::AUTHORIZATION_CALLBACK => null // null means not auth
     ];
     
-    private function __construct() {}
-    private function __clone() {}
-    
     public static function registerAutoload()
     {
         spl_autoload_register(__NAMESPACE__ . "\\APIJet::autoload");
@@ -68,7 +65,7 @@ class APIJet
         return self::$apiJetConfig[$propertyName];
     }
     
-    public static function runApp()
+    public function run()
     {
         if (!Request::isАuthorized()) {
             Response::setCode(401);

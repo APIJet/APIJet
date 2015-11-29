@@ -6,6 +6,7 @@ use APIJet\APIJet;
 
 APIJet::registerAutoload();
 
-APIJet::runApp();
+$app = new APIJet();
+$app->run();
 
 \APIJet\Response::render();
