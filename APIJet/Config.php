@@ -2,38 +2,57 @@
 
 namespace APIJet;
 
+use APIJet\Router AS R;
+
 class Config
 { 
-    private static $configStore = [];
-    private static $baseConfigDir = null;
+    private static $configStore = null;
+    private static $defaultConfig = [
+        'APIJet' => [
+            APIJet::DEFAULT_RESPONSE_LIMIT => 25,
+            APIJet::AUTHORIZATION_CALLBACK => null,
+        ],
+        'Db' => [
+            'hostname' => '',
+            'database' => '',
+            'username' => '',
+            'password' => '',
+        ],
+        'Router' => [
+            'globalPattern' => [
+                '{id}' => '([0-9]+)',
+            ],
+            'routes' => [
+                'hello_world' => [R::GET, 'hello\world'],
+            ]
+        ]
+    ];
     
     private function __construct() {}
     private function __clone() {}
     
     /**
      * @desc if config with corresponding file doesn't exist will return an empty array
-     * @param sting $name
+     * @param string $name
      * @return array 
      */
     public static function getByName($name)
     {
-        if (!isset(self::$configStore[$name])) {
-            $configFile = @include self::getBaseConfigDir().$name.APIJet::fileExt;
-            
-            if ($configFile === false) {
-                $configFile = [];
-            }
-            self::$configStore[$name] = $configFile;
-        }
-        
+        self::load();
         return self::$configStore[$name];
     }
     
-    private static function getBaseConfigDir()
+    private static function load()
     {
-        if (self::$baseConfigDir === null) {
-            self::$baseConfigDir = APIJet::getRootDir().'Config'.DIRECTORY_SEPARATOR;
+        if (self::$configStore === null) {
+            self::$configStore = self::$defaultConfig;
         }
-        return self::$baseConfigDir;
     }
+    
+    public static function setConfig(array $newConfig)
+    {
+        self::load();
+        self::$configStore = $newConfig + self::$configStore;
+    }
+    
 }
