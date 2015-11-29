@@ -14,12 +14,16 @@ class Request
     private $authorizationCallback;
     private $defaultResponseLimit;
     
-    public function __construct($authorizationCallback, $defaultResponseLimit = 0)
+    public function setAuthorizationCallback($authorizationCallback)
     {
         $this->authorizationCallback = $authorizationCallback;
-        $this->defaultResponseLimit = (int) $defaultResponseLimit;
     }
-    
+
+    public function setDefaultResponseLimit($defaultResponseLimit)
+    {
+        $this->defaultResponseLimit = $defaultResponseLimit;
+    }
+
     public static function getCleanRequestUrl()
     {
         $rawRequestUrl = $_SERVER["REQUEST_URI"];

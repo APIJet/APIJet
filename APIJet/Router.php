@@ -40,6 +40,16 @@ class Router
     private $matchedAction;
     private $matchedPatameters = [];
     
+    public function setRoutes($routes)
+    {
+        $this->routes = $routes;
+    }
+    
+    public function setGlobalPattern($globalPattern)
+    {
+        $this->globalPattern = $globalPattern;
+    }
+    
     public function getMatchedController()
     {
         return $this->matchedController;
@@ -55,11 +65,6 @@ class Router
         return $this->matchedPatameters;
     }
     
-    public function __construct(array $routes, array $globalPattern) 
-    {
-        $this->routes = $routes;
-        $this->globalPattern = $globalPattern;
-    }
     
     /**
      * @return array of matched resource controller and action, if not matched return null

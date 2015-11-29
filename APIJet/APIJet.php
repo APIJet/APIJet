@@ -115,24 +115,30 @@ class APIJet
         return $this->getSingletonContainer('Response');
     }
     
-    public function __construct() 
+    public function __construct(array $userConfig = [], array $containers = []) 
     {
         $config = $containers['Config'] = new Config();
         $config->set(self::$defaultConfig);
+        $config->set($userConfig);
         
         $APIJetConfig = $config->get('APIJet');
         $routerConfig = $config->get('Router');
         
-        $containers['Router'] = new Router(
-            $routerConfig['routes'], 
-            $routerConfig['globalPattern']
-        );
-        $containers['Request'] = new Request(
-            $APIJetConfig[APIJet::AUTHORIZATION_CALLBACK],
-            $APIJetConfig[APIJet::DEFAULT_RESPONSE_LIMIT]
-        );
-        $containers['Response'] = new Response();
+        if (!isset($containers['Router'])) {
+            $containers['Router'] = new Router();
+        }
+        $routerContainer = $containers['Router'];
+        $routerContainer->setRoutes($routerConfig['routes']);
+        $routerContainer->setGlobalPattern($routerConfig['globalPattern']);
         
+        if (!isset($containers['Request'])) {
+            $containers['Request'] = new Request();
+        }
+        $requestContainer = $containers['Request'];
+        $requestContainer->setAuthorizationCallback($APIJetConfig[APIJet::AUTHORIZATION_CALLBACK]);
+        $requestContainer->setDefaultResponseLimit($APIJetConfig[APIJet::DEFAULT_RESPONSE_LIMIT]);
+        
+        $containers['Response'] = new Response();
         $this->singletonContainer = $containers;
     }
     
