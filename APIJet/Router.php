@@ -35,24 +35,13 @@ class Router
     
     private static $matchedRoutePatameters = [];
     
-    public function __construct() 
-    {
-        
-    }
+    private $routes; 
+    private $globalPattern; 
     
-    private static function getConfig()
+    public function __construct(array $routes, array $globalPattern) 
     {
-        return Config::getByName('Router');   
-    }
-    
-    private static function getRoutes()
-    {
-        return self::getConfig()['routes'];
-    }
-    
-    private static function getGlobalPattern()
-    {
-        return self::getConfig()['globalPattern'];
+        $this->routes = $routes;
+        $this->globalPattern = $globalPattern;
     }
     
     /**
@@ -62,7 +51,7 @@ class Router
      */
     public function getMatchedRouterResource($requestMethod, $requestResourceUrl)
     {
-        foreach (self::getRoutes() as $routePattern => $route) {
+        foreach ($this->routes as $routePattern => $route) {
             
             if (self::isMatchRequestType($requestMethod, $route[0])) {
             
@@ -72,7 +61,7 @@ class Router
                     $localUrlPattern = [];
                 }
                 
-                if (self::isMatchResourceUrl($requestResourceUrl, $routePattern, $localUrlPattern)){
+                if ($this->isMatchResourceUrl($requestResourceUrl, $routePattern, $localUrlPattern)){
                     // Route matched, stop checking other router.
                     return self::parseResourceName($route[1]);
                 }
@@ -88,12 +77,12 @@ class Router
         return [substr($resourceName, 0, $strPosName), substr($resourceName, ++$strPosName)];
     }
     
-    public static function getMachedRouteParameters()
+    public function getMachedRouteParameters()
     {
         return self::$matchedRoutePatameters;
     }
     
-    private static function setMachedRouteParameters($matchedRoutePatameters)
+    private function setMachedRouteParameters($matchedRoutePatameters)
     {
         self::$matchedRoutePatameters = $matchedRoutePatameters;
     }
@@ -105,10 +94,10 @@ class Router
         return (($requestMethodBitwiseValue & $allowedRequestMethod) == $requestMethodBitwiseValue);
     }
     
-    private static function isMatchResourceUrl($requestResourceUrl, $routeResourceUrl, $localRoutePattern)
+    private function isMatchResourceUrl($requestResourceUrl, $routeResourceUrl, array $localRoutePattern)
     {
         // Merge local and global pattern, local must overview global
-        $routePatterns = $localRoutePattern + self::getGlobalPattern();
+        $routePatterns = $localRoutePattern + $this->globalPattern;
         
         // Applying patterns to router resource URL
         $routeResourceUrl = strtr($routeResourceUrl, $routePatterns);
@@ -118,7 +107,7 @@ class Router
         
         if ($isMatched) {
             unset($machedRouteParameters[0]);
-            self::setMachedRouteParameters($machedRouteParameters);
+            $this->setMachedRouteParameters($machedRouteParameters);
         }
         
         return $isMatched;

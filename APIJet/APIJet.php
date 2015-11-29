@@ -81,12 +81,16 @@ class APIJet
      */
     public function getRouterContainer()
     {
-        return $this->getSingletonContainer('router');
+        return $this->getSingletonContainer('Router');
     }
     
     public function __construct() 
     {
-        $containers['router'] = new Router();
+        $containers['Router'] = new Router(
+            Config::getByName('Router')['routes'],
+            Config::getByName('Router')['globalPattern']
+        );
+        
         $this->singletonContainer = $containers;
     }
     
@@ -110,7 +114,7 @@ class APIJet
             $response = self::executeResoruceAction(
                 $matchedResource[0], 
                 $matchedResource[1], 
-                Router::getMachedRouteParameters()
+                $router->getMachedRouteParameters()
             );
             
             if ($response === false) {
