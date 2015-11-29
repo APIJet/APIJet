@@ -32,7 +32,7 @@ class Config
     private function __clone() {}
     
     /**
-     * @desc if config with corresponding file doesn't exist will return an empty array
+     * @desc if config with corresponding file doesn't exist it will return an empty array
      * @param string $name
      * @return array 
      */

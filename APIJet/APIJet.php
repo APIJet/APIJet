@@ -103,18 +103,17 @@ class APIJet
         }
         
         $router = $this->getRouterContainer();
-        $matchedResource = $router->getMatchedRouterResource(Request::getMethod(), Request::getCleanRequestUrl());
 
-        if ($matchedResource === null) {
+        if (!$router->getMatchedRouterResource(Request::getMethod(), Request::getCleanRequestUrl())) {
             Response::setCode(404);
             return;
         }
         
         try  {
             $response = self::executeResoruceAction(
-                $matchedResource[0], 
-                $matchedResource[1], 
-                $router->getMachedRouteParameters()
+                $router->getMatchedController(),
+                $router->getMatchedAction(),
+                $router->getMatchedRouteParameters()
             );
             
             if ($response === false) {

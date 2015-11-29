@@ -33,10 +33,27 @@ class Router
         'DELETE' => self::DELETE
     ];
     
-    private static $matchedRoutePatameters = [];
-    
     private $routes; 
-    private $globalPattern; 
+    private $globalPattern;
+    
+    private $matchedController;
+    private $matchedAction;
+    private $matchedPatameters = [];
+    
+    public function getMatchedController()
+    {
+        return $this->matchedController;
+    }
+    
+    public function getMatchedAction()
+    {
+        return $this->matchedAction;
+    }
+    
+    public function getMatchedRouteParameters()
+    {
+        return $this->matchedPatameters;
+    }
     
     public function __construct(array $routes, array $globalPattern) 
     {
@@ -61,30 +78,22 @@ class Router
                     $localUrlPattern = [];
                 }
                 
-                if ($this->isMatchResourceUrl($requestResourceUrl, $routePattern, $localUrlPattern)){
-                    // Route matched, stop checking other router.
-                    return self::parseResourceName($route[1]);
+                // Route matched, stop checking other router.
+                if ($this->isMatchResourceUrl($requestResourceUrl, $routePattern, $localUrlPattern)) {
+                    $this->parseResourceName($route[1]);
+                    return true;
                 }
             }
         }
-        
-        return null;
+        return false;
     }
     
-    private static function parseResourceName($resourceName)
+    private function parseResourceName($resourceName)
     {
         $strPosName = strpos($resourceName, "\\");
-        return [substr($resourceName, 0, $strPosName), substr($resourceName, ++$strPosName)];
-    }
-    
-    public function getMachedRouteParameters()
-    {
-        return self::$matchedRoutePatameters;
-    }
-    
-    private function setMachedRouteParameters($matchedRoutePatameters)
-    {
-        self::$matchedRoutePatameters = $matchedRoutePatameters;
+        
+        $this->matchedController = substr($resourceName, 0, $strPosName);
+        $this->matchedAction = substr($resourceName, ++$strPosName);
     }
     
     private static function isMatchRequestType($requestMethod, $allowedRequestMethod)
@@ -107,11 +116,10 @@ class Router
         
         if ($isMatched) {
             unset($machedRouteParameters[0]);
-            $this->setMachedRouteParameters($machedRouteParameters);
+            $this->matchedPatameters = $machedRouteParameters;
         }
         
         return $isMatched;
     }
     
 }
-
