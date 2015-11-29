@@ -12,6 +12,8 @@ class APIJet
     const DEFAULT_RESPONSE_LIMIT = 0;
     const AUTHORIZATION_CALLBACK = 1;
     
+    private $singletonContainer;
+    
     private static $defaultConfig = 
     [
         'APIJet' => [
@@ -32,7 +34,39 @@ class APIJet
                 'hello_world' => [\APIJet\Router::GET, 'hello\world'],
             ]
         ]
-   ];
+    ];
+    
+    public function __construct(array $userConfig = [], array $containers = [])
+    {
+        if (!isset($containers['Config'])) {
+            $containers['Config'] = new Config();
+        }
+        $config = $containers['Config'];
+        $config->set(self::$defaultConfig);
+        $config->set($userConfig);
+    
+        $APIJetConfig = $config->get('APIJet');
+        $routerConfig = $config->get('Router');
+    
+        if (!isset($containers['Router'])) {
+            $containers['Router'] = new Router();
+        }
+        $routerContainer = $containers['Router'];
+        $routerContainer->setRoutes($routerConfig['routes']);
+        $routerContainer->setGlobalPattern($routerConfig['globalPattern']);
+    
+        if (!isset($containers['Request'])) {
+            $containers['Request'] = new Request();
+        }
+        $requestContainer = $containers['Request'];
+        $requestContainer->setAuthorizationCallback($APIJetConfig[APIJet::AUTHORIZATION_CALLBACK]);
+        $requestContainer->setDefaultResponseLimit($APIJetConfig[APIJet::DEFAULT_RESPONSE_LIMIT]);
+    
+        if (!isset($containers['Response'])) {
+            $containers['Response'] = new Response();
+        }
+        $this->singletonContainer = $containers;
+    }
     
     public static function registerAutoload()
     {
@@ -68,11 +102,8 @@ class APIJet
         if (self::$rootDir === null) {
             self::$rootDir = realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
         }
-        
         return self::$rootDir;
     }
-    
-    private $singletonContainer;
     
     public function getSingletonContainer($name)
     {
@@ -115,33 +146,6 @@ class APIJet
         return $this->getSingletonContainer('Response');
     }
     
-    public function __construct(array $userConfig = [], array $containers = []) 
-    {
-        $config = $containers['Config'] = new Config();
-        $config->set(self::$defaultConfig);
-        $config->set($userConfig);
-        
-        $APIJetConfig = $config->get('APIJet');
-        $routerConfig = $config->get('Router');
-        
-        if (!isset($containers['Router'])) {
-            $containers['Router'] = new Router();
-        }
-        $routerContainer = $containers['Router'];
-        $routerContainer->setRoutes($routerConfig['routes']);
-        $routerContainer->setGlobalPattern($routerConfig['globalPattern']);
-        
-        if (!isset($containers['Request'])) {
-            $containers['Request'] = new Request();
-        }
-        $requestContainer = $containers['Request'];
-        $requestContainer->setAuthorizationCallback($APIJetConfig[APIJet::AUTHORIZATION_CALLBACK]);
-        $requestContainer->setDefaultResponseLimit($APIJetConfig[APIJet::DEFAULT_RESPONSE_LIMIT]);
-        
-        $containers['Response'] = new Response();
-        $this->singletonContainer = $containers;
-    }
-    
     public function run()
     {
         $request = $this->getRequestContainer();
@@ -173,7 +177,6 @@ class APIJet
         } catch(\Exception $e) {
             $response->setCode(500);
         }
-        
         $response->render();
     }
     

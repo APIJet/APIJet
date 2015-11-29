@@ -123,7 +123,6 @@ class Router
             unset($machedRouteParameters[0]);
             $this->matchedPatameters = $machedRouteParameters;
         }
-        
         return $isMatched;
     }
     

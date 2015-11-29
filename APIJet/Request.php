@@ -88,10 +88,8 @@ class Request
             if (!empty($rawInput)) {
                 mb_parse_str($rawInput, $inputData);
             }
-    
             self::$inputData = $inputData;
         }
-    
         return self::$inputData;
     }
 }
