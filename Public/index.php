@@ -8,5 +8,3 @@ APIJet::registerAutoload();
 
 $app = new APIJet();
 $app->run();
-
-

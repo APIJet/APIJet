@@ -4,39 +4,47 @@ namespace APIJet;
 
 abstract class BaseController 
 {
+    /**
+     * @var APIJet
+     */
+    private $app;
+    
+    public function __construct($app)
+    {
+        $this->app = $app;
+    }
+    
+    /**
+     * @return APIJet
+     */
+    public function getApp()
+    {
+        return $this->app;
+    }
+    
     public function setResponseCode($code)
     {
-        global $app;
-        
-        $app->getResponseContainer()->setCode($code);
+        $this->app->getResponseContainer()->setCode($code);
     }
     
     public function getResponseCode()
     {
-        global $app;
-        
-        return $app->getResponseContainer()->getCode();
+        return $this->app->getResponseContainer()->getCode();
     }
     
     public function getRequestLimit()
     {
-        global $app;
-        
-        return $app->getRequestContainer()->getLimit();
+        return $this->app->getRequestContainer()->getLimit();
     }
     
     public function getRequestOffset()
     {
-        global $app;
-        
-        return $app->getRequestContainer()->getOffset();
+        return $this->app->getRequestContainer()->getOffset();
     }
     
     public function getInputData()
     {
-        global $app;
-        
-        return $app->getRequestContainer()->getInputData();
+        return $this->app->getRequestContainer()->getInputData();
     }
 }
 

@@ -194,7 +194,7 @@ class APIJet
             return false;
         }
         
-        $controllerInstance = new $controller();
+        $controllerInstance = new $controller($this);
         
         // Check if action exist
         if (!method_exists($controllerInstance, $action)) {
