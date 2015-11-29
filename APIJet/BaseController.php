@@ -6,12 +6,16 @@ abstract class BaseController
 {
     public function setResponseCode($code)
     {
-        Response::setCode($code);
+        global $app;
+        
+        $app->getResponseContainer()->setCode($code);
     }
     
     public function getResponseCode()
     {
-        return Response::getCode();
+        global $app;
+        
+        return $app->getResponseContainer()->getCode();
     }
     
     public function getRequestLimit()

@@ -99,6 +99,14 @@ class APIJet
         return $this->getSingletonContainer('Config');
     }
     
+    /**
+     * @return Response
+     */
+    public function getResponseContainer()
+    {
+        return $this->getSingletonContainer('Response');
+    }
+    
     public function __construct() 
     {
         $config = $containers['Config'] = new Config();
@@ -110,39 +118,45 @@ class APIJet
             $routerConfig['routes'], 
             $routerConfig['globalPattern']
         );
+        $containers['Response'] = new Response();
+        
         
         $this->singletonContainer = $containers;
     }
     
     public function run()
     {
+        $response = $this->getResponseContainer();
+        
         if (!Request::isАuthorized()) {
-            Response::setCode(401);
+            $response->setCode(401);
             return;
         }
         
         $router = $this->getRouterContainer();
 
         if (!$router->getMatchedRouterResource(Request::getMethod(), Request::getCleanRequestUrl())) {
-            Response::setCode(404);
+            $response->setCode(404);
             return;
         }
         
         try  {
-            $response = self::executeResoruceAction(
+            $actionResponse = self::executeResoruceAction(
                 $router->getMatchedController(),
                 $router->getMatchedAction(),
                 $router->getMatchedRouteParameters()
             );
             
-            if ($response === false) {
-                Response::setCode(404);
+            if ($actionResponse === false) {
+                $response->setCode(404);
             } else {
-                Response::setBody($response);
+                $response->setBody($actionResponse);
             }
         } catch(\Exception $e) {
-            Response::setCode(500);
+            $response->setCode(500);
         }
+        
+        $response->render();
     }
     
     /**

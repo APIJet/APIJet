@@ -4,42 +4,39 @@ namespace APIJet;
 
 class Response
 {
-    private function __construct() {}
-    private function __clone() {}
+    private $code = 200;
+    private $body = [];
+    private $headers = [];
     
-    private static $code = 200;
-    private static $body = [];
-    private static $headers = [];
-    
-    public static function setCode($code) 
+    public function setCode($code) 
     {
-        self::$code = $code;
+        $this->code = $code;
     }
     
-    public static function getCode() 
+    public function getCode() 
     {
-        return self::$code;
+        return $this->code;
     }
     
-    public static function setBody($body)
+    public function setBody($body)
     {
-        self::$body = $body;
+        $this->body = $body;
     }
     
-    public static function render()
+    public function render()
     {
-        self::sendHeaders();
-        self::sendBody();
+        $this->sendHeaders();
+        $this->sendBody();
     }
     
-    private static function sendHeaders()
+    private function sendHeaders()
     {
-        http_response_code(self::getCode());
+        http_response_code($this->getCode());
         header('Content-type: application/json');
     }
     
-    private static function sendBody()
+    private function sendBody()
     {
-        echo json_encode(self::$body);
+        echo json_encode($this->body);
     }
 }
