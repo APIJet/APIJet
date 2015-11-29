@@ -9,7 +9,7 @@ server {
 	server_name your-restful-api.com;
 
 	root /usr/share/nginx/your-restful-api.com/Public/;
-	index index.php index.html;
+	index index.php;
 	error_log /var/log/nginx/your-restful-api.com-error.log;
 
 	location / {
