@@ -1,0 +1,7 @@
+{
+    "name": "GyunerZeki/APIJet",
+    "description": "PHP Framework for RESTful API",
+    "require": {
+        "php": ">=5.4.0"
+    }
+}
