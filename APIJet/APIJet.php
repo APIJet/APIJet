@@ -19,20 +19,6 @@ class APIJet
         'APIJet' => [
             self::DEFAULT_RESPONSE_LIMIT => 25,
             self::AUTHORIZATION_CALLBACK => null,
-        ],
-        'Db' => [
-            'hostname' => '',
-            'database' => '',
-            'username' => '',
-            'password' => '',
-        ],
-        'Router' => [
-            'globalPattern' => [
-                '{id}' => '([0-9]+)',
-            ],
-            'routes' => [
-                'hello_world' => [\APIJet\Router::GET, 'hello\world'],
-            ]
         ]
     ];
     
@@ -111,6 +97,11 @@ class APIJet
             return $this->singletonContainer[$name];
         }
         trigger_error('Singleton container with '.$name.' does not exist', E_USER_ERROR);
+    }
+
+    public function setSingletonContainer($name, $instance) 
+    {
+        $this->singletonContainer[$name] = $instance;
     }
     
     /**

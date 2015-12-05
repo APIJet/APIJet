@@ -5,40 +5,28 @@ namespace Helper;
 use APIJet\APIJet;
 use \PDO;
 
-class Db
+class Db extends PDO
 {
-    private static $instance = null;
     private static $options = [
         PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8",
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
     ];
     
-    private function __construct() {}
-    private function __clone() {}
-    
-    public static function getInstance()
+    public function __construct(array $config) 
     {
-        if (self::$instance === null) {
-            
-            global $app;
-            
-            $config = $app->getConfigContainer()->get('Db');
-            
-            self::$instance = new PDO('mysql:host='.$config['hostname'].';dbname='.$config['database'], 
-                $config['username'], 
-                $config['password'],
-                self::$options
-            );
-        }
-        
-        return self::$instance;
+        parent::__construct('mysql:host='.$config['hostname'].';dbname='.$config['database'],
+            $config['username'],
+            $config['password'],
+            self::$options
+        );
     }
     
-    public static function execQuery($query, array $parameters = [])
+    public function execQuery($query, array $parameters = [])
     {
-        $statement = self::getInstance()->prepare($query);
+        $statement = parent::prepare($query);
         $statement->execute($parameters);
+        
         return $statement;
     }
     
@@ -47,11 +35,6 @@ class Db
         $limit = (int) $limit;
         $offset = (int) $offset;
         
-        return " LIMIT ".($offset * $limit).", $limit ";
-    }
-    
-    public static function getLastInsertId()
-    {
-        return self::getInstance()->lastInsertId();
+        return ' LIMIT '.($offset * $limit).', '.$limit;
     }
 }
