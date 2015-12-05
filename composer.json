@@ -1,5 +1,5 @@
 {
-    "name": "GyunerZeki/APIJet",
+    "name": "gyuner-zeki/api-jet",
     "description": "PHP Framework for RESTful API",
     "require": {
         "php": ">=5.4.0"
