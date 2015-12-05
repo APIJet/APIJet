@@ -8,18 +8,51 @@ class APIJet
     private static $rootDir = null;
     private static $apiJetConfig = null;
     
-    // List of configurable name settings.
+    // List of configurable settings name.
     const DEFAULT_RESPONSE_LIMIT = 0;
     const AUTHORIZATION_CALLBACK = 1;
     
-    // Default configure value which can be overwrite by APIJet config file.
-    private static $apiJetDefaultConfig = [
-        self::DEFAULT_RESPONSE_LIMIT => 25,
-        self::AUTHORIZATION_CALLBACK => null // null means not auth
+    private $singletonContainer;
+    
+    private static $defaultConfig = 
+    [
+        'APIJet' => [
+            self::DEFAULT_RESPONSE_LIMIT => 25,
+            self::AUTHORIZATION_CALLBACK => null,
+        ]
     ];
     
-    private function __construct() {}
-    private function __clone() {}
+    public function __construct(array $userConfig = [], array $containers = [])
+    {
+        if (!isset($containers['Config'])) {
+            $containers['Config'] = new Config();
+        }
+        $config = $containers['Config'];
+        $config->set(self::$defaultConfig);
+        $config->set($userConfig);
+    
+        $APIJetConfig = $config->get('APIJet');
+        $routerConfig = $config->get('Router');
+    
+        if (!isset($containers['Router'])) {
+            $containers['Router'] = new Router();
+        }
+        $routerContainer = $containers['Router'];
+        $routerContainer->setRoutes($routerConfig['routes']);
+        $routerContainer->setGlobalPattern($routerConfig['globalPattern']);
+    
+        if (!isset($containers['Request'])) {
+            $containers['Request'] = new Request();
+        }
+        $requestContainer = $containers['Request'];
+        $requestContainer->setAuthorizationCallback($APIJetConfig[APIJet::AUTHORIZATION_CALLBACK]);
+        $requestContainer->setDefaultResponseLimit($APIJetConfig[APIJet::DEFAULT_RESPONSE_LIMIT]);
+    
+        if (!isset($containers['Response'])) {
+            $containers['Response'] = new Response();
+        }
+        $this->singletonContainer = $containers;
+    }
     
     public static function registerAutoload()
     {
@@ -55,60 +88,98 @@ class APIJet
         if (self::$rootDir === null) {
             self::$rootDir = realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
         }
-        
         return self::$rootDir;
     }
     
-    public static function getAPIJetConfig($propertyName)
+    public function getSingletonContainer($name)
     {
-        if (self::$apiJetConfig === null) {
-            self::$apiJetConfig = Config::getByName('APIJet') + self::$apiJetDefaultConfig;
+        if (isset($this->singletonContainer[$name])) {
+            return $this->singletonContainer[$name];
         }
-    
-        return self::$apiJetConfig[$propertyName];
+        trigger_error('Singleton container with '.$name.' does not exist', E_USER_ERROR);
+    }
+
+    public function setSingletonContainer($name, $instance) 
+    {
+        $this->singletonContainer[$name] = $instance;
     }
     
-    public static function runApp()
+    /**
+     * @return Router
+     */
+    public function getRouterContainer()
     {
-        if (!Request::isАuthorized()) {
-            Response::setCode(401);
+        return $this->getSingletonContainer('Router');
+    }
+    
+    /**
+     * @return Config
+     */
+    public function getConfigContainer()
+    {
+        return $this->getSingletonContainer('Config');
+    }
+    
+    /**
+     * @return Request
+     */
+    public function getRequestContainer()
+    {
+        return $this->getSingletonContainer('Request');
+    }
+    
+    /**
+     * @return Response
+     */
+    public function getResponseContainer()
+    {
+        return $this->getSingletonContainer('Response');
+    }
+    
+    public function run()
+    {
+        $request = $this->getRequestContainer();
+        $response = $this->getResponseContainer();
+        
+        if (!$request->isАuthorized()) {
+            $response->setCode(401);
             return;
         }
+        $router = $this->getRouterContainer();
         
-        $matchedResource = Router::getMatchedRouterResource(Request::getMethod(), Request::getCleanRequestUrl());
-
-        if ($matchedResource === null) {
-            Response::setCode(404);
+        if (!$router->getMatchedRouterResource($request::getMethod(), $request::getCleanRequestUrl())) {
+            $response->setCode(404);
             return;
         }
         
         try  {
-            $response = self::executeResoruceAction(
-                $matchedResource[0], 
-                $matchedResource[1], 
-                Router::getMachedRouteParameters()
+            $actionResponse = $this->executeResoruceAction(
+                $router->getMatchedController(),
+                $router->getMatchedAction(),
+                $router->getMatchedRouteParameters()
             );
             
-            if ($response === false) {
-                Response::setCode(404);
+            if ($actionResponse === false) {
+                $response->setCode(404);
             } else {
-                Response::setBody($response);
+                $response->setBody($actionResponse);
             }
         } catch(\Exception $e) {
-            Response::setCode(500);
+            $response->setCode(500);
         }
+        $response->render();
     }
     
     /**
      * @return response of executed action or false in case it doesn't exist
      * @param string $controller
      * @param string $action
-     * @param string  $parameters
+     * @param string $parameters
      */
-    private static function executeResoruceAction($controller, $action, $parameters)
+    private function executeResoruceAction($controller, $action, $parameters)
     {
         $controller = ucfirst($controller);
-        $action = strtolower(Request::getMethod()).'_'.$action;
+        $action = strtolower($this->getRequestContainer()->getMethod()).'_'.$action;
         
         // Check if controller file exist
         if (!file_exists(self::getRootDir().'Controller/'.$controller.self::fileExt))  {
@@ -122,7 +193,7 @@ class APIJet
             return false;
         }
         
-        $controllerInstance = new $controller();
+        $controllerInstance = new $controller($this);
         
         // Check if action exist
         if (!method_exists($controllerInstance, $action)) {

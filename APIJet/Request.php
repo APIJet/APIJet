@@ -11,9 +11,19 @@ class Request
     
     private static $inputData = null;
     
-    private function __construct() {}
-    private function __clone() {}
+    private $authorizationCallback;
+    private $defaultResponseLimit;
     
+    public function setAuthorizationCallback($authorizationCallback)
+    {
+        $this->authorizationCallback = $authorizationCallback;
+    }
+
+    public function setDefaultResponseLimit($defaultResponseLimit)
+    {
+        $this->defaultResponseLimit = $defaultResponseLimit;
+    }
+
     public static function getCleanRequestUrl()
     {
         $rawRequestUrl = $_SERVER["REQUEST_URI"];
@@ -33,19 +43,16 @@ class Request
         return $_SERVER['REQUEST_METHOD'];
     }
     
-    public static function getLimit()
+    public function getLimit()
     {
         if (isset($_GET['limit'])) {
             $limit = (int) $_GET['limit'];
             
-            if ($limit < 0) {
-                return APIJet::getAPIJetConfig(APIJet::DEFAULT_RESPONSE_LIMIT); 
+            if ($limit > 0) {
+                return $limit;
             }
-            
-            return $limit;
         }
-        
-        return APIJet::getAPIJetConfig(APIJet::DEFAULT_RESPONSE_LIMIT); 
+        return $this->defaultResponseLimit; 
     }
     
     public static function getOffset()
@@ -53,22 +60,19 @@ class Request
         if (isset($_GET['offset'])) {
             $offset = (int) $_GET['offset'];
             
-            if ($offset < 0) {
-                return 0;
+            if ($offset > 0) {
+                return $offset;
             }
-            
-            return $offset;
         }
-        
         return 0;
     }
     
-    public static function isАuthorized()
+    public function isАuthorized()
     {
-        $authorizationCallback = APIJet::getAPIJetConfig(APIJet::AUTHORIZATION_CALLBACK);
+        $authorizationCallback = $this->authorizationCallback;
         
         if ($authorizationCallback === null) {
-            return true;    
+            return true;
         }
         
         return (bool) $authorizationCallback();
@@ -84,10 +88,8 @@ class Request
             if (!empty($rawInput)) {
                 mb_parse_str($rawInput, $inputData);
             }
-    
             self::$inputData = $inputData;
         }
-    
         return self::$inputData;
     }
 }

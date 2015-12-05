@@ -37,6 +37,7 @@ trait ErrorResponse
     public function setErrorInfo($controller)
     {
         $controller->setResponseCode(400);
+        
         return $this->getErrorInfo();
     }
 }

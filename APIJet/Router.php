@@ -33,34 +33,47 @@ class Router
         'DELETE' => self::DELETE
     ];
     
-    private static $matchedRoutePatameters = [];
+    private $routes; 
+    private $globalPattern;
     
-    private function __construct() {}
-    private function __clone() {}
+    private $matchedController;
+    private $matchedAction;
+    private $matchedPatameters = [];
     
-    private static function getConfig()
+    public function setRoutes($routes)
     {
-        return Config::getByName('Router');   
+        $this->routes = $routes;
     }
     
-    private static function getRoutes()
+    public function setGlobalPattern($globalPattern)
     {
-        return self::getConfig()['routes'];
+        $this->globalPattern = $globalPattern;
     }
     
-    private static function getGlobalPattern()
+    public function getMatchedController()
     {
-        return self::getConfig()['globalPattern'];
+        return $this->matchedController;
     }
+    
+    public function getMatchedAction()
+    {
+        return $this->matchedAction;
+    }
+    
+    public function getMatchedRouteParameters()
+    {
+        return $this->matchedPatameters;
+    }
+    
     
     /**
      * @return array of matched resource controller and action, if not matched return null
      * @param string $requestMethod
      * @param string $requestResourceUrl
      */
-    public static function getMatchedRouterResource($requestMethod, $requestResourceUrl)
+    public function getMatchedRouterResource($requestMethod, $requestResourceUrl)
     {
-        foreach (self::getRoutes() as $routePattern => $route) {
+        foreach ($this->routes as $routePattern => $route) {
             
             if (self::isMatchRequestType($requestMethod, $route[0])) {
             
@@ -70,30 +83,22 @@ class Router
                     $localUrlPattern = [];
                 }
                 
-                if (self::isMatchResourceUrl($requestResourceUrl, $routePattern, $localUrlPattern)){
-                    // Route matched, stop checking other router.
-                    return self::parseResourceName($route[1]);
+                // Route matched, stop checking other router.
+                if ($this->isMatchResourceUrl($requestResourceUrl, $routePattern, $localUrlPattern)) {
+                    $this->parseResourceName($route[1]);
+                    return true;
                 }
             }
         }
-        
-        return null;
+        return false;
     }
     
-    private static function parseResourceName($resourceName)
+    private function parseResourceName($resourceName)
     {
         $strPosName = strpos($resourceName, "\\");
-        return [substr($resourceName, 0, $strPosName), substr($resourceName, ++$strPosName)];
-    }
-    
-    public static function getMachedRouteParameters()
-    {
-        return self::$matchedRoutePatameters;
-    }
-    
-    private static function setMachedRouteParameters($matchedRoutePatameters)
-    {
-        self::$matchedRoutePatameters = $matchedRoutePatameters;
+        
+        $this->matchedController = substr($resourceName, 0, $strPosName);
+        $this->matchedAction = substr($resourceName, ++$strPosName);
     }
     
     private static function isMatchRequestType($requestMethod, $allowedRequestMethod)
@@ -103,10 +108,10 @@ class Router
         return (($requestMethodBitwiseValue & $allowedRequestMethod) == $requestMethodBitwiseValue);
     }
     
-    private static function isMatchResourceUrl($requestResourceUrl, $routeResourceUrl, $localRoutePattern)
+    private function isMatchResourceUrl($requestResourceUrl, $routeResourceUrl, array $localRoutePattern)
     {
         // Merge local and global pattern, local must overview global
-        $routePatterns = $localRoutePattern + self::getGlobalPattern();
+        $routePatterns = $localRoutePattern + $this->globalPattern;
         
         // Applying patterns to router resource URL
         $routeResourceUrl = strtr($routeResourceUrl, $routePatterns);
@@ -116,11 +121,9 @@ class Router
         
         if ($isMatched) {
             unset($machedRouteParameters[0]);
-            self::setMachedRouteParameters($machedRouteParameters);
+            $this->matchedPatameters = $machedRouteParameters;
         }
-        
         return $isMatched;
     }
     
 }
-
