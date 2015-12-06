@@ -80,15 +80,7 @@ class APIJet
         // require $fileName;
         
         // Adapted  
-        require self::getRootDir().$fileName;
-    }
-    
-    public static function getRootDir()
-    {
-        if (self::$rootDir === null) {
-            self::$rootDir = realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
-        }
-        return self::$rootDir;
+        require '../'.$fileName;
     }
     
     public function getSingletonContainer($name)
@@ -180,12 +172,6 @@ class APIJet
     {
         $controller = ucfirst($controller);
         $action = strtolower($this->getRequestContainer()->getMethod()).'_'.$action;
-        
-        // Check if controller file exist
-        if (!file_exists(self::getRootDir().'Controller/'.$controller.self::fileExt))  {
-            return false;
-        }
-        
         $controller = 'Controller\\'.$controller;
         
         // Check if class exist
