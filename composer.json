@@ -3,5 +3,8 @@
     "description": "PHP Framework for RESTful API",
     "require": {
         "php": ">=5.4.0"
+    },
+    "autoload": {
+        "psr-0": { "APIJet": "." }
     }
 }
