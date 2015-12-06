@@ -172,7 +172,7 @@ class APIJet
     {
         $controller = ucfirst($controller);
         $action = strtolower($this->getRequestContainer()->getMethod()).'_'.$action;
-        $controller = 'Controller\\'.$controller;
+        $controller = 'Controllers\\'.$controller;
         
         // Check if class exist
         if (!class_exists($controller)) {
