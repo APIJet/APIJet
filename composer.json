@@ -1,6 +1,7 @@
 {
     "name": "gyuner-zeki/api-jet",
     "description": "PHP Framework for RESTful API",
+    "license": "MIT",
     "require": {
         "php": ">=5.4.0"
     },
