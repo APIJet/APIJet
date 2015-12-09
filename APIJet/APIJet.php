@@ -30,27 +30,7 @@ class APIJet
         $config = $containers['Config'];
         $config->set(self::$defaultConfig);
         $config->set($userConfig);
-    
-        $APIJetConfig = $config->get('APIJet');
-        $routerConfig = $config->get('Router');
-    
-        if (!isset($containers['Router'])) {
-            $containers['Router'] = new Router();
-        }
-        $routerContainer = $containers['Router'];
-        $routerContainer->setRoutes($routerConfig['routes']);
-        $routerContainer->setGlobalPattern($routerConfig['globalPattern']);
-    
-        if (!isset($containers['Request'])) {
-            $containers['Request'] = new Request();
-        }
-        $requestContainer = $containers['Request'];
-        $requestContainer->setAuthorizationCallback($APIJetConfig[APIJet::AUTHORIZATION_CALLBACK]);
-        $requestContainer->setDefaultResponseLimit($APIJetConfig[APIJet::DEFAULT_RESPONSE_LIMIT]);
-    
-        if (!isset($containers['Response'])) {
-            $containers['Response'] = new Response();
-        }
+        
         $this->singletonContainer = $containers;
     }
     
@@ -128,8 +108,41 @@ class APIJet
         return $this->getSingletonContainer('Response');
     }
     
-    public function run()
+    /**
+     * @desc Initialize basic container excluding config
+     */
+    private function initBaseContainers($containers)
     {
+        $config = $this->getConfigContainer();
+        
+        $APIJetConfig = $config->get('APIJet');
+        $routerConfig = $config->get('Router');
+        
+        if (!isset($containers['Router'])) {
+            $containers['Router'] = new Router();
+        }
+        $routerContainer = $containers['Router'];
+        $routerContainer->setRoutes($routerConfig['routes']);
+        $routerContainer->setGlobalPattern($routerConfig['globalPattern']);
+        
+        if (!isset($containers['Request'])) {
+            $containers['Request'] = new Request();
+        }
+        $requestContainer = $containers['Request'];
+        $requestContainer->setAuthorizationCallback($APIJetConfig[APIJet::AUTHORIZATION_CALLBACK]);
+        $requestContainer->setDefaultResponseLimit($APIJetConfig[APIJet::DEFAULT_RESPONSE_LIMIT]);
+        
+        if (!isset($containers['Response'])) {
+            $containers['Response'] = new Response();
+        }
+        $responseContainer = $containers['Response'];
+        $this->singletonContainer = $containers + $this->singletonContainer;
+    }
+    
+    public function run($containers = [])
+    {
+    	$this->initBaseContainers($containers);
+
         $request = $this->getRequestContainer();
         $response = $this->getResponseContainer();
         
