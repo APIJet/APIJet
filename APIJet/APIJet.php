@@ -5,8 +5,6 @@ namespace APIJet;
 class APIJet 
 {
     const fileExt = '.php';
-    private static $rootDir = null;
-    private static $apiJetConfig = null;
     
     // List of configurable settings name.
     const DEFAULT_RESPONSE_LIMIT = 0;
@@ -129,8 +127,8 @@ class APIJet
             $containers['Request'] = new Request();
         }
         $requestContainer = $containers['Request'];
-        $requestContainer->setAuthorizationCallback($APIJetConfig[APIJet::AUTHORIZATION_CALLBACK]);
-        $requestContainer->setDefaultResponseLimit($APIJetConfig[APIJet::DEFAULT_RESPONSE_LIMIT]);
+        $requestContainer->setAuthorizationCallback($APIJetConfig[self::AUTHORIZATION_CALLBACK]);
+        $requestContainer->setDefaultResponseLimit($APIJetConfig[self::DEFAULT_RESPONSE_LIMIT]);
         
         if (!isset($containers['Response'])) {
             $containers['Response'] = new Response();
