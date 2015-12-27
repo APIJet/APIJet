@@ -1,4 +1,3 @@
-# APIJet
 ![Logo](https://raw.githubusercontent.com/APIJet/APIJet/master/resources/api-jet-logo.png)
 
 # Getting started
