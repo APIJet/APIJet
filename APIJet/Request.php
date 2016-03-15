@@ -38,6 +38,12 @@ class Request
         return substr($clearnRequestUrl, 1);
     }
     
+    public static function getHeader($key)
+    {
+        $headers = getallheaders();
+        return $headers[$key];
+    }
+    
     public static function getMethod()
     {
         return $_SERVER['REQUEST_METHOD'];
