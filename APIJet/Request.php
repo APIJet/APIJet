@@ -40,8 +40,7 @@ class Request
     
     public static function getHeader($key)
     {
-        $headers = getallheaders();
-        return $headers[$key];
+        return getallheaders()[$key];
     }
     
     public static function getMethod()
