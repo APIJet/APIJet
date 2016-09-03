@@ -64,6 +64,12 @@ class APIJet
     public function getSingletonContainer($name)
     {
         if (isset($this->singletonContainer[$name])) {
+
+            $instance = $this->singletonContainer[$name];
+
+            if ($instance instanceof \Closure) {
+                $this->singletonContainer[$name] = $instance();
+            }
             return $this->singletonContainer[$name];
         }
         trigger_error('Singleton container with '.$name.' does not exist', E_USER_ERROR);
