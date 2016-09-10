@@ -139,7 +139,6 @@ class APIJet
         if (!isset($containers['Response'])) {
             $containers['Response'] = new Response();
         }
-        $responseContainer = $containers['Response'];
         $this->singletonContainer = $containers + $this->singletonContainer;
     }
     
