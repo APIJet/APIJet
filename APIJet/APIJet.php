@@ -204,7 +204,7 @@ class APIJet
             return false;
         }
         
-        // Check if it's callable
+        // Check if it's a callable method
         if (!is_callable([$controllerInstance, $action])) {
             return false;
         }
