@@ -6,19 +6,10 @@ class APIJet
 {
     const fileExt = '.php';
     
-    // List of configurable settings name.
-    const DEFAULT_RESPONSE_LIMIT = 0;
-    const AUTHORIZATION_CALLBACK = 1;
-    
     private $singletonContainer;
     
-    private static $defaultConfig = 
-    [
-        'APIJet' => [
-            self::DEFAULT_RESPONSE_LIMIT => 25,
-            self::AUTHORIZATION_CALLBACK => null,
-        ]
-    ];
+    private $authorizationCallback = null;
+    private $defaultResponseLimit = 25;
     
     public function __construct(array $userConfig = [], array $containers = [])
     {
@@ -26,7 +17,6 @@ class APIJet
             $containers['Config'] = new Config();
         }
         $config = $containers['Config'];
-        $config->set(self::$defaultConfig);
         $config->set($userConfig);
         
         $this->singletonContainer = $containers;
@@ -118,8 +108,6 @@ class APIJet
     private function initBaseContainers($containers)
     {
         $config = $this->getConfigContainer();
-        
-        $APIJetConfig = $config->get('APIJet');
         $routerConfig = $config->get('Router');
         
         if (!isset($containers['Router'])) {
@@ -133,13 +121,23 @@ class APIJet
             $containers['Request'] = new Request();
         }
         $requestContainer = $containers['Request'];
-        $requestContainer->setAuthorizationCallback($APIJetConfig[self::AUTHORIZATION_CALLBACK]);
-        $requestContainer->setDefaultResponseLimit($APIJetConfig[self::DEFAULT_RESPONSE_LIMIT]);
+        $requestContainer->setAuthorizationCallback($this->authorizationCallback);
+        $requestContainer->setDefaultResponseLimit($this->defaultResponseLimit);
         
         if (!isset($containers['Response'])) {
             $containers['Response'] = new Response();
         }
         $this->singletonContainer = $containers + $this->singletonContainer;
+    }
+
+    public function setAuthorizationCallback($authorizationCallback)
+    {
+        $this->authorizationCallback = $authorizationCallback;
+    }
+
+    public function setDefaultResponseLimit($defaultResponseLimit)
+    {
+        $this->defaultResponseLimit = $defaultResponseLimit;
     }
     
     public function run($containers = [])
