@@ -149,6 +149,7 @@ class APIJet
         
         if (!$request->isАuthorized()) {
             $response->setCode(401);
+            $response->render();
             return;
         }
         $router = $this->getRouterContainer();
