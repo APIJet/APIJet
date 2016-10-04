@@ -131,7 +131,7 @@ class APIJet
         $this->singletonContainer = $containers + $this->singletonContainer;
     }
 
-    public function setAuthorizationCallback($authorizationCallback, $exceptionResources)
+    public function setAuthorizationCallback($authorizationCallback, $exceptionResources = '')
     {
         $this->authorizationCallback = $authorizationCallback;
         $this->authorizationExceptionResources = $exceptionResources;
