@@ -10,7 +10,8 @@ class APIJet
     
     private $authorizationCallback = null;
     private $defaultResponseLimit = 25;
-    
+    private $authorizationExceptionResources = '';
+
     public function __construct(array $userConfig = [], array $containers = [])
     {
         if (!isset($containers['Config'])) {
@@ -130,9 +131,10 @@ class APIJet
         $this->singletonContainer = $containers + $this->singletonContainer;
     }
 
-    public function setAuthorizationCallback($authorizationCallback)
+    public function setAuthorizationCallback($authorizationCallback, $exceptionResources)
     {
         $this->authorizationCallback = $authorizationCallback;
+        $this->authorizationExceptionResources = $exceptionResources;
     }
 
     public function setDefaultResponseLimit($defaultResponseLimit)
@@ -146,15 +148,20 @@ class APIJet
 
         $request = $this->getRequestContainer();
         $response = $this->getResponseContainer();
+
+        $requestUrl = $request::getCleanRequestUrl();
         
-        if (!$request->isАuthorized()) {
-            $response->setCode(401);
-            $response->render();
-            return;
+        // don't check authorization if the current resource url is in exception. 
+        if (! (bool) preg_match('#^'.$this->authorizationExceptionResources.'$#', $requestUrl)) {
+            if (!$request->isАuthorized()) {
+                $response->setCode(401);
+                $response->render();
+                return;
+            }
         }
         $router = $this->getRouterContainer();
         
-        if (!$router->getMatchedRouterResource($request::getMethod(), $request::getCleanRequestUrl())) {
+        if (!$router->getMatchedRouterResource($request::getMethod(), $requestUrl)) {
             $response->setCode(404);
         } else {
             try  {
