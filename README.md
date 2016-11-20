@@ -5,4 +5,4 @@
 For quick start it's recommended to have a look at the skeleton project [APIJet/skeleton](https://github.com/APIJet/skeleton).
 
 ## License
-The APIJet is licensed under the MIT license. See [License File](LICENSE.md) for more information.
+The APIJet is licensed under the MIT license. See [License File](LICENSE) for more information.
