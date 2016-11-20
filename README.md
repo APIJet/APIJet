@@ -2,7 +2,7 @@
 ![Logo](https://raw.githubusercontent.com/APIJet/APIJet/master/resources/api-jet-logo.png)
 
 # Getting started
-For quick start it's recomend to have a look at the skeleton project [APIJet/skeleton](https://github.com/APIJet/skeleton).
+For quick start it's recommended to have a look at the skeleton project [APIJet/skeleton](https://github.com/APIJet/skeleton).
 
 # Web server config (nginx)
 ```
