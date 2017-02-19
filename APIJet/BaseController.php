@@ -46,5 +46,10 @@ abstract class BaseController
     {
         return $this->app->getRequestContainer()->getInputData();
     }
+
+    public function getConfig($name)
+    {
+        return $this->app->getConfigContainer()->get($name);
+    }
 }
 
