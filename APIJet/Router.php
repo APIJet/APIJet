@@ -95,7 +95,7 @@ class Router
     
     private function parseResourceName($resourceName)
     {
-        $strPosName = strpos($resourceName, "\\");
+        $strPosName = strrpos($resourceName, "\\");
         
         $this->matchedController = substr($resourceName, 0, $strPosName);
         $this->matchedAction = substr($resourceName, ++$strPosName);
