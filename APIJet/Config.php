@@ -15,7 +15,12 @@ class Config
     {
         $this->configStore = $newConfig + $this->configStore;
     }
-    
+
+    public function isDefined($name)
+    {
+        return isset($this->configStore[$name]);
+    }
+
     public function loadByJsonFile($filepath)
     {
         $fileContent = file_get_contents($filepath);
