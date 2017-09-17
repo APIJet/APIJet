@@ -51,5 +51,10 @@ abstract class BaseController
     {
         return $this->app->getConfigContainer()->get($name);
     }
+
+    public function isDefinedConfig($name)
+    {
+        return $this->app->getConfigContainer()->isDefined($name);
+    }
 }
 
