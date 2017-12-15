@@ -73,22 +73,23 @@ class Router
      */
     public function getMatchedRouterResource($requestMethod, $requestResourceUrl)
     {
-        foreach ($this->routes as $routePattern => $route) {
-            
-            if (self::isMatchRequestType($requestMethod, $route[0])) {
-            
-                if (isset($route[2])) {
-                    $localUrlPattern = $route[2];
-                } else {
-                    $localUrlPattern = [];
-                }
-                
-                // Route matched, stop checking other router.
-                if ($this->isMatchResourceUrl($requestResourceUrl, $routePattern, $localUrlPattern)) {
-                    $this->parseResourceName($route[1]);
-                    return true;
-                }
+        // get only the routers for the specific type.
+        $routers = $this->routes[self::$matchMethodToIndex[$requestMethod]];
+
+        foreach ($routers as $routePattern => $route) {
+        
+            if (isset($route[1])) {
+                $localUrlPattern = $route[1];
+            } else {
+                $localUrlPattern = [];
             }
+            
+            // Route matched, stop checking other router.
+            if ($this->isMatchResourceUrl($requestResourceUrl, $routePattern, $localUrlPattern)) {
+                $this->parseResourceName($route[0]);
+                return true;
+            }
+         
         }
         return false;
     }
