@@ -11,6 +11,11 @@ class Config
         return $this->configStore[$name];
     }
     
+    public function getAll()
+    {
+        return $this->configStore;
+    }
+
     public function set(array $newConfig)
     {
         $this->configStore = $newConfig + $this->configStore;
