@@ -11,26 +11,16 @@ class Router
     
     const POST                = 1;
     const GET                 = 2;
-    const POST_GET            = 3;
-    const PUT                 = 4;
-    const POST_PUT            = 5;
-    const GET_PUT             = 6;
-    const POST_GET_PUT        = 7;
-    const DELETE              = 8;
-    const POST_DELETE         = 9;
-    const GET_DELETE          = 10;
-    const POST_GET_DELETE     = 11;
-    const PUT_DELETE          = 12;
-    const POST_PUT_DELETE     = 13;
-    const GET_PUT_DELETE      = 14;
-    const POST_GET_PUT_DELETE = 15;
-    const ALL = self::POST_GET_PUT_DELETE;
+    const PUT                 = 3;
+    const DELETE              = 4;
+    const HEAD                = 5;
     
     private static $matchMethodToIndex = [
         'POST' => self::POST,
         'GET' => self::GET,
         'PUT' => self::PUT,
-        'DELETE' => self::DELETE
+        'DELETE' => self::DELETE,
+        'HEAD' => self::HEAD
     ];
     
     private $routes; 
