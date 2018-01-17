@@ -4,11 +4,6 @@ namespace APIJet;
 
 class Router
 {
-    // First bit is for POST.
-    // Second bit is for GET.
-    // Third bit is for PUT.
-    // Forth bit is for DELETE
-    
     const POST                = 1;
     const GET                 = 2;
     const PUT                 = 3;
