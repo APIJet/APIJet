@@ -7,6 +7,7 @@ class APIJet
     const fileExt = '.php';
     
     private $singletonContainer;
+    private $container;
     
     private $authorizationCallback = null;
     private $defaultResponseLimit = 25;
@@ -69,6 +70,25 @@ class APIJet
     public function setSingletonContainer($name, $instance) 
     {
         $this->singletonContainer[$name] = $instance;
+    }
+
+    public function getContainer($name)
+    {
+        if (isset($this->container[$name])) {
+
+            $instance = $this->container[$name];
+
+            if ($instance instanceof \Closure) {
+                return $instance();
+            }
+            trigger_error('Container with '.$name.' name should be Closure', E_USER_ERROR);
+        }
+        trigger_error('Container with '.$name.' does not exist', E_USER_ERROR);
+    }
+
+    public function setContainer($name, $instance) 
+    {
+        $this->container[$name] = $instance;
     }
     
     /**
