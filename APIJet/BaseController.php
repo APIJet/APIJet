@@ -7,54 +7,54 @@ abstract class BaseController
     /**
      * @var APIJet
      */
-    private $app;
+    private $appInstance;
     
-    public function __construct($app)
+    public function __construct($appInstance)
     {
-        $this->app = $app;
+        self::$appInstance = $appInstance;
     }
     
     /**
      * @return APIJet
      */
-    public function getApp()
+    public static function getApp()
     {
-        return $this->app;
+        return self::$appInstance;
     }
     
     public function setResponseCode($code)
     {
-        $this->app->getResponseContainer()->setCode($code);
+        self::$appInstance->getResponseContainer()->setCode($code);
     }
     
     public function getResponseCode()
     {
-        return $this->app->getResponseContainer()->getCode();
+        return self::$appInstance->getResponseContainer()->getCode();
     }
     
     public function getRequestLimit()
     {
-        return $this->app->getRequestContainer()->getLimit();
+        return self::$appInstance->getRequestContainer()->getLimit();
     }
     
     public function getRequestOffset()
     {
-        return $this->app->getRequestContainer()->getOffset();
+        return self::$appInstance->getRequestContainer()->getOffset();
     }
     
     public function getInputData()
     {
-        return $this->app->getRequestContainer()->getInputData();
+        return self::$appInstance->getRequestContainer()->getInputData();
     }
 
     public function getConfig($name)
     {
-        return $this->app->getConfigContainer()->get($name);
+        return self::$appInstance->getConfigContainer()->get($name);
     }
 
     public function isDefinedConfig($name)
     {
-        return $this->app->getConfigContainer()->isDefined($name);
+        return self::$appInstance->getConfigContainer()->isDefined($name);
     }
 }
 
