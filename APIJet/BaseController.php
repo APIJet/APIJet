@@ -7,7 +7,7 @@ abstract class BaseController
     /**
      * @var APIJet
      */
-    private $appInstance;
+    private static $appInstance;
     
     public function __construct($appInstance)
     {
