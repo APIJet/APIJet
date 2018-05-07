@@ -9,9 +9,9 @@ abstract class BaseController
      */
     private static $appInstance;
     
-    public function __construct($appInstance)
+    public function __construct($app)
     {
-        self::$appInstance = $appInstance;
+        self::$appInstance = $app;
     }
     
     /**
