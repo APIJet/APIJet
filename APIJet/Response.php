@@ -32,11 +32,11 @@ class Response
     private function sendHeaders()
     {
         http_response_code($this->getCode());
-        header('Content-type: application/json');
+        header('Content-type: application/json; charset=utf-8');
     }
     
     private function sendBody()
     {
-        echo json_encode($this->body);
+        echo json_encode($this->body, JSON_UNESCAPED_UNICODE);
     }
 }
