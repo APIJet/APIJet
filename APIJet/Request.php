@@ -40,7 +40,9 @@ class Request
     
     public static function getHeader($key)
     {
-        return isset(self::getAllHeaders()[$key]) ? self::getAllHeaders()[$key] : '';
+        $headers = self::getAllHeaders();
+        
+        return isset($headers[$key]) ? $headers[$key] : '';
     }
     
     public static function getMethod()
