@@ -102,7 +102,7 @@ class Request
      * @desc Get all headers
      * @return array
      */
-    private static function getallheaders()
+    public static function getallheaders()
     {
         $headers = array();
         foreach ($_SERVER as $name => $value)
