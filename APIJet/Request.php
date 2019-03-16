@@ -40,7 +40,7 @@ class Request
     
     public static function getHeader($key)
     {
-        return self::getallheaders()[$key];
+        return isset(self::getAllHeaders()[$key]) ? self::getAllHeaders()[$key] : '';
     }
     
     public static function getMethod()
@@ -102,7 +102,7 @@ class Request
      * @desc Get all headers
      * @return array
      */
-    public static function getallheaders()
+    public static function getAllHeaders()
     {
         $headers = array();
         foreach ($_SERVER as $name => $value)
